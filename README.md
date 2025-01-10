@@ -5,8 +5,13 @@ This repo contains brainfuck programs that implement the [Quite OK Image Format]
 - `fnl`: sources of the programs
 - `bf`: generated brainfuck programs (ready to use)
 
-## building the brainfuck programs
-This step should only be necessary if you modify the source files in `fnl`.
+## building and testing the brainfuck programs
+These steps are only necessary if you modified the source files in `fnl` or want to run tests. Requires:
+- [Fennel](https://fennel-lang.org/)
+- [bfc](https://bfc.wilfred.me.uk/)
+- ImageMagick
 ```sh
-make
+make # build bf/* from fnl/*
+make build # compile bf/* with bfc
+make test # run tests
 ```
