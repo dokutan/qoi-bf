@@ -1,0 +1,3 @@
+[submodule "bf-codegen"]
+	path = bf-codegen
+	url = https://github.com/dokutan/bf-codegen
