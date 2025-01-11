@@ -4,13 +4,16 @@ BFC=bfc
 FNL_FILES   := $(wildcard fnl/*.fnl)
 BF_FILES    := $(FNL_FILES:fnl/%.fnl=bf/%.bf)
 BUILD_FILES := $(FNL_FILES:fnl/%.fnl=build/%)
+DEBUG_FILES := $(FNL_FILES:fnl/%.fnl=debug/%.lua)
 
 all: $(BF_FILES)
 
 clean:
-	rm -rf fnl2bf.lua build test
+	rm -rf fnl2bf.lua build test debug
 
 build: $(BUILD_FILES)
+
+debug: $(DEBUG_FILES)
 
 test: build
 	./test.sh
@@ -25,5 +28,9 @@ bf/%.bf: fnl/%.fnl fnl2bf.lua
 build/%: bf/%.bf
 	mkdir -p build
 	cd build && $(BFC) ../$<
+
+debug/%.lua: bf/%.bf
+	mkdir -p debug
+	cd bf2lua && lua bf2.lua -g -i ../$< -o ../$@
 
 .PHONY: all build clean test
