@@ -3,7 +3,7 @@ This program generates a QOI image containing all possible combinations of two c
 
 
 write qoi header: width=256 height=768 RGB
-[-]+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.--.------.---.[-]..+.-...+++.---.+++.---.
+[-]>--[<->---------]<-.--.------.---.[-]..+.-...+++.---.+++.---.
 
 red/green:
 [-]--.++... write the first pixel (black)

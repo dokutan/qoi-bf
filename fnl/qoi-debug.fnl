@@ -36,7 +36,7 @@
 
     "\n\n"))
 
-(fn main []
+(local main
   (..
     (bf.commentln
       "memory layout:"
@@ -47,7 +47,8 @@
     (bf.commentln "check qoif header")
     (check-qoif)
 
-    (bf.if (bf.comment "only continue if the header is valid:")
+    (bf.commentln "only continue if the header is valid:")
+    (bf.if "\n"
 
       (bf.print! "qoif header is valid\n")
       "[-]"
@@ -242,4 +243,7 @@
 
     )))
 
-(print (main))
+(-> main
+    bf.optimize
+    bf.format
+    print)

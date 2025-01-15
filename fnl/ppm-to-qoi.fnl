@@ -138,4 +138,5 @@
 
 (-> (main)
   bf.optimize
+  bf.format
   print)

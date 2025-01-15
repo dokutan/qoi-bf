@@ -174,7 +174,7 @@
                     0
                     (..
                       (bf.ptr -7)
-                      "#.>.>.>."
+                      ".>.>.>."
                       (bf.ptr 4))
                     
                     ;; else
@@ -213,4 +213,5 @@
 
 (-> (main)
   bf.optimize
+  bf.format
   print)
