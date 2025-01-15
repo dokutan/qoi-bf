@@ -1,7 +1,7 @@
 memory layout:
-00: w w w w 0, h h h h 0, channels has_alpha 0 colorspace 0 (decoded header)
-20: h h h h 0, 0 0 0 0 0, w w w w 0, 0 0 0 0 0 (loop variables)
-40: decoded_pixels 0 0 0 0, decoder temp … (decoder state)
+00: w w w w 0， h h h h 0， channels has_alpha 0 colorspace 0 (decoded header)
+20: h h h h 0， 0 0 0 0 0， w w w w 0， 0 0 0 0 0 (loop variables)
+40: decoded_pixels 0 0 0 0， decoder temp … (decoder state)
 
 check qoif header
 ,>,>,>,
