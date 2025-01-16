@@ -168,7 +168,7 @@
 
                           (bf.commentln "get lower 6 bits")
                           (bf.at 1
-                            "[---->+<]" ; ?
+                            "[---->+<]"
                             (bf.at 3 (bf.zero))
                             (bf.at 1 (bf.mov! -1)))
 
@@ -184,7 +184,46 @@
                               1
                               (..
                                 (bf.commentln "QOI_OP_DIFF")
-                                (bf.print! "QOI_OP_DIFF\n"))
+                                (bf.print! "QOI_OP_DIFF: ")
+
+                                (bf.at -14
+                                  (bf.commentln "multiply with carry by 16 to get dr")
+                                  (bf.at [1 (bf.zero) 4 (bf.zero)])
+                                  (bf.loop "->" (bf.double (bf.inc 16)) "<")
+                                  (bf.at 1 (bf.mov! -1))
+
+                                  (bf.commentln "print dr")
+                                  (bf.at 4
+                                    (bf.inc -2)
+                                    (bf.print-cell-negative\)
+                                    (bf.print! " ")
+                                    (bf.zero))
+
+                                  (bf.commentln "multiply with carry by 4 to get dg")
+                                  (bf.at [1 (bf.zero) 4 (bf.zero)])
+                                  (bf.loop "->" (bf.double (bf.inc 4)) "<")
+                                  (bf.at 1 (bf.mov! -1))
+
+                                  (bf.commentln "print dg")
+                                  (bf.at 4
+                                    (bf.inc -2)
+                                    (bf.print-cell-negative\)
+                                    (bf.print! " ")
+                                    (bf.zero))
+
+                                  (bf.commentln "get db")
+                                  (bf.at 1 (bf.zero))
+                                  (bf.loop
+                                    (bf.inc -64)
+                                    (bf.at 1 "+"))
+
+                                  (bf.commentln "print db")
+                                  (bf.at 1
+                                    (bf.inc -2)
+                                    (bf.print-cell-negative\)
+                                    (bf.zero)))
+
+                                (bf.print! "\n"))
                               2
                               (..
                                 (bf.commentln "QOI_OP_LUMA")
