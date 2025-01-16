@@ -129,7 +129,7 @@
               (bf.commentln "only read the next byte if decoded_pixels is zero")
               (bf.if= 0 1 2
                 (bf.at -11
-                  
+
                   (bf.Q.at 3
                     "[-],"
                     (bf.mov 1 2 true)
@@ -188,8 +188,51 @@
                               2
                               (..
                                 (bf.commentln "QOI_OP_LUMA")
-                                (bf.print! "QOI_OP_LUMA\n")
-                                ",")
+                                (bf.print! "QOI_OP_LUMA: ")
+                                (bf.at -14
+                                  (bf.commentln "subtract dg bias")
+                                  (bf.inc -32)
+                                  (bf.commentln "print dg")
+                                  (bf.print-cell-negative\))
+                                (bf.print! " ")
+
+                                (bf.commentln "read second byte of QOI_OP_LUMA")
+                                ","
+
+                                (bf.commentln "multiply with carry by 16 to get the upper four bits")
+                                (bf.at 4 (bf.zero))
+                                (bf.loop "->" (bf.double (bf.inc 16)) "<")
+
+                                (bf.commentln "add dg to dr-dg")
+                                (bf.at -14
+                                  (bf.add 18 17))
+
+                                (bf.at 4
+                                  (bf.commentln "subtract dr bias")
+                                  (bf.inc -8)
+                                  (bf.commentln "print dg")
+                                  (bf.print-cell-negative\)
+                                  (bf.print! " ")
+                                  (bf.zero))
+
+                                (bf.commentln "get the lower 4 bits")
+                                (bf.zero)
+                                (bf.at 1
+                                  (bf.loop
+                                    (bf.inc -16)
+                                    "<+>"))
+
+                                (bf.commentln "add dg to db-dg")
+                                (bf.at -14
+                                  (bf.add 14 15))
+
+                                (bf.commentln "subtract db bias")
+                                (bf.inc -8)
+                                (bf.commentln "print db")
+                                (bf.print-cell-negative\)
+                                (bf.zero)
+
+                                (bf.print! "\n"))
                               3
                               (..
                                 (bf.commentln "QOI_OP_RUN")
@@ -207,11 +250,11 @@
 
                           (bf.at [1 (bf.zero)
                                   4 (bf.zero)])))))
-                  
+
                   )))
 
-            
-            
+
+
             (bf.at 15 (bf.zero)) ; ?
 
             (bf.at 10
