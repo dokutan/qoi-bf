@@ -42,75 +42,48 @@
       "memory layout:"
       "00: w w w w 0, h h h h 0, channels has_alpha 0 colorspace 0 (decoded header)"
       "20: h h h h 0, 0 0 0 0 0, w w w w 0, 0 0 0 0 0 (loop variables)"
-      "40: decoded_pixels 0 0 0 0, decoder temp … (decoder state)")
+      "40: decoded_pixels 0 0 0 0, decoder temp … (decoder state)"
+      "70: R G B A")
 
     (bf.commentln "check qoif header")
     (check-qoif)
 
     (bf.commentln "only continue if the header is valid:")
     (bf.if "\n"
-
-      (bf.print! "qoif header is valid\n")
       "[-]"
 
       (bf.commentln "read width")
-      (bf.print! "width: ") (bf.zero)
       (bf.at
         [3 ","
          2 ","
          1 ","
          0 ","])
-
-      (bf.commentln "print width")
-      (bf.Q.print-cell\)
 
       (bf.ptr 5)
       (bf.commentln "read height")
-      (bf.print! "\nheight: ") (bf.zero)
       (bf.at
         [3 ","
          2 ","
          1 ","
          0 ","])
 
-      (bf.commentln "print height")
-      (bf.Q.print-cell\)
-
       (bf.ptr 5)
       (bf.commentln "read channels: →channels has_alpha temp temp temp")
-      (bf.print! "\n") (bf.zero)
       ","
       (bf.mov 2 3)
       (bf.at 2
         (bf.case! 1
-          3
-          (..
-              (bf.at -2 "[-]") (bf.commentln "RGB: set has_alpha to 0")
-              (bf.print2! "RGB\n" 1))
           4
           (..
-              (bf.at -2 "[-]+") (bf.commentln "RGBA: set has_alpha to 1")
-              (bf.print2! "RGBA\n" 1))
+              (bf.commentln "RGBA: set has_alpha to 1")
+              (bf.at -2 "[-]+"))
           (..
-              (bf.at -2 "[-]") (bf.commentln "else: set has_alpha to 0")
-              (bf.print2! "invalid channels: " 1)
-              (bf.zero)
-              (bf.at -3 (bf.print-cell\))
-              (bf.print! "\n"))))
+              (bf.commentln "else: set has_alpha to 0")
+              (bf.at -2 "[-]"))))
 
       (bf.ptr 3)
       (bf.commentln "read colorspace: →colorspace temp temp temp")
       ","
-      (bf.mov 1 2)
-      (bf.at 1
-        (bf.case! 1
-          0 (bf.print2! "sRGB\n" 1)
-          1 (bf.print2! "linear\n" 1)
-          (..
-              (bf.print2! "invalid colorspace: " 1)
-              (bf.zero)
-              (bf.at -2 (bf.print-cell\))
-              (bf.print! "\n"))))
 
       (bf.commentln "decode image")
       (bf.ptr -8)
@@ -138,19 +111,17 @@
                         254
                         (..
                           (bf.commentln "QOI_OP_RGB")
-                          (bf.print! "QOI_OP_RGB: ") (bf.zero)
-                          "," (bf.print-cell\) (bf.print! " ")  (bf.zero)
-                          "," (bf.print-cell\) (bf.print! " ")  (bf.zero)
-                          "," (bf.print-cell\) (bf.print! "\n") (bf.zero))
+                          (bf.at [23 ","
+                                  24 ","
+                                  25 ","]))
 
                         255
                         (..
                           (bf.commentln "QOI_OP_RGBA")
-                          (bf.print! "QOI_OP_RGBA: ") (bf.zero)
-                          "," (bf.print-cell\) (bf.print! " ")  (bf.zero)
-                          "," (bf.print-cell\) (bf.print! " ")  (bf.zero)
-                          "," (bf.print-cell\) (bf.print! " ")  (bf.zero)
-                          "," (bf.print-cell\) (bf.print! "\n") (bf.zero))
+                          (bf.at [23 ","
+                                  24 ","
+                                  25 ","
+                                  26 ","]))
 
                         ; else
                         (..
@@ -178,13 +149,12 @@
                               0
                               (..
                                 (bf.commentln "QOI_OP_INDEX")
-                                (bf.print! "QOI_OP_INDEX: ")
-                                (bf.at -14 (bf.print-cell\))
-                                (bf.print! "\n"))
+                                ;; (bf.at -14 (bf.print-cell\))
+                                ;; (bf.print! "\n")
+                                )
                               1
                               (..
                                 (bf.commentln "QOI_OP_DIFF")
-                                (bf.print! "QOI_OP_DIFF: ")
 
                                 (bf.at -14
                                   (bf.commentln "multiply with carry by 16 to get dr")
@@ -192,24 +162,20 @@
                                   (bf.loop "->" (bf.double (bf.inc 16)) "<")
                                   (bf.at 1 (bf.mov! -1))
 
-                                  (bf.commentln "print dr")
+                                  (bf.commentln "add dr to R")
                                   (bf.at 4
                                     (bf.inc -2)
-                                    (bf.print-cell-negative\)
-                                    (bf.print! " ")
-                                    (bf.zero))
+                                    (bf.add! 18))
 
                                   (bf.commentln "multiply with carry by 4 to get dg")
                                   (bf.at [1 (bf.zero) 4 (bf.zero)])
                                   (bf.loop "->" (bf.double (bf.inc 4)) "<")
                                   (bf.at 1 (bf.mov! -1))
 
-                                  (bf.commentln "print dg")
+                                  (bf.commentln "add dg to G")
                                   (bf.at 4
                                     (bf.inc -2)
-                                    (bf.print-cell-negative\)
-                                    (bf.print! " ")
-                                    (bf.zero))
+                                    (bf.add! 19))
 
                                   (bf.commentln "get db")
                                   (bf.at 1 (bf.zero))
@@ -217,23 +183,18 @@
                                     (bf.inc -64)
                                     (bf.at 1 "+"))
 
-                                  (bf.commentln "print db")
+                                  (bf.commentln "add db to B")
                                   (bf.at 1
                                     (bf.inc -2)
-                                    (bf.print-cell-negative\)
-                                    (bf.zero)))
-
-                                (bf.print! "\n"))
+                                    (bf.add! 23))))
                               2
                               (..
                                 (bf.commentln "QOI_OP_LUMA")
-                                (bf.print! "QOI_OP_LUMA: ")
                                 (bf.at -14
                                   (bf.commentln "subtract dg bias")
                                   (bf.inc -32)
-                                  (bf.commentln "print dg")
-                                  (bf.print-cell-negative\))
-                                (bf.print! " ")
+                                  (bf.commentln "add dg to G")
+                                  (bf.add 23 1))
 
                                 (bf.commentln "read second byte of QOI_OP_LUMA")
                                 ","
@@ -249,10 +210,8 @@
                                 (bf.at 4
                                   (bf.commentln "subtract dr bias")
                                   (bf.inc -8)
-                                  (bf.commentln "print dr")
-                                  (bf.print-cell-negative\)
-                                  (bf.print! " ")
-                                  (bf.zero))
+                                  (bf.commentln "add dr to R")
+                                  (bf.add! 4))
 
                                 (bf.commentln "get the lower 4 bits")
                                 (bf.zero)
@@ -267,22 +226,17 @@
 
                                 (bf.commentln "subtract db bias")
                                 (bf.inc -8)
-                                (bf.commentln "print db")
-                                (bf.print-cell-negative\)
-                                (bf.zero)
-
-                                (bf.print! "\n"))
+                                (bf.commentln "add db to B")
+                                (bf.add! 10))
                               3
                               (..
                                 (bf.commentln "QOI_OP_RUN")
-                                (bf.print! "QOI_OP_RUN: ")
                                 (bf.at -14
-                                  "+"
-                                  (bf.print-cell\)
-                                  "-"
+                                  ;; "+"
+                                  ;; (bf.print-cell\)
+                                  ;; "-"
                                   (bf.commentln "move length of the run")
-                                  (bf.mov! -1))
-                                (bf.print! "\n"))))
+                                  (bf.mov! -1)))))
 
                           (bf.commentln "move number of decoded pixels")
                           :+ (bf.mov! -7)
@@ -291,8 +245,23 @@
                                   4 (bf.zero)])))))
 
                   )))
-
-
+            
+            (bf.commentln "print current pixel")
+            (bf.at 44
+              (bf.print! "\x1b[48;2;")
+              (bf.zero)
+              (bf.at [-4 (bf.mov 4 5)
+                      0  (bf.print-cell\)
+                      0  (bf.print! ";")
+                      0  (bf.zero)
+                      -3 (bf.mov 3 4)
+                      0  (bf.print-cell\)
+                      0  (bf.print! ";")
+                      0  (bf.zero)
+                      -2 (bf.mov 2 3)
+                      0  (bf.print-cell\)
+                      0  (bf.print! "m  ")
+                      0  (bf.zero)]))
 
             (bf.at 15 (bf.zero)) ; ?
 
@@ -303,27 +272,17 @@
                 (bf.if "<->")))
 
             ;; next pixel
-            (bf.quadruple "-")
-            ))
+            (bf.quadruple "-")))
 
-        ;; next row
-        (bf.quadruple "-")
+        (bf.commentln "next row")
+        (bf.quadruple "-")        
+        (bf.at 4
+          (bf.print! "\x1b[0m\n")
+          (bf.zero)))
 
-        )
-
-      (bf.commentln "read end of stream marker")
-      (string.rep ",+>" 8)
-      (bf.array1.strcomparel! "\1\1\1\1\1\1\1\2")
-      (bf.at 1 "[-]+")
-      (bf.if
-        ">[-]<"
-        (bf.print! "end of stream is valid\n"))
-      (bf.at 1
-        (bf.if
-          (bf.print! "end of stream is invalid\n")))
-
-
-    )))
+      (bf.commentln "reset terminal colors")
+      (bf.print! "\x1b[0m")
+      (bf.zero))))
 
 (-> main
     bf.optimize
