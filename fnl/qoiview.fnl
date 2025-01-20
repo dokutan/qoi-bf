@@ -45,6 +45,10 @@
       "40: decoded_pixels 0 0 0 0, decoder temp … (decoder state)"
       "70: R G B A")
 
+    (bf.commentln "set initial value of the previous pixel (0,0,0,255)")
+    (bf.at 73
+      "-")
+
     (bf.commentln "check qoif header")
     (check-qoif)
 
@@ -245,23 +249,30 @@
                                   4 (bf.zero)])))))
 
                   )))
-            
+
             (bf.commentln "print current pixel")
             (bf.at 44
-              (bf.print! "\x1b[48;2;")
-              (bf.zero)
-              (bf.at [-4 (bf.mov 4 5)
-                      0  (bf.print-cell\)
-                      0  (bf.print! ";")
-                      0  (bf.zero)
-                      -3 (bf.mov 3 4)
-                      0  (bf.print-cell\)
-                      0  (bf.print! ";")
-                      0  (bf.zero)
-                      -2 (bf.mov 2 3)
-                      0  (bf.print-cell\)
-                      0  (bf.print! "m  ")
-                      0  (bf.zero)]))
+              (bf.at -1 (bf.mov 1 2))
+              (bf.if= 0 1 2
+                (bf.commentln "if alpha is 0: use terminal background color")
+                (bf.print! "\x1b[0m  "))
+              (bf.if
+                "[-]"
+                (bf.commentln "if alpha is >0:")
+                (bf.print! "\x1b[48;2;")
+                (bf.zero)
+                (bf.at [-4 (bf.mov 4 5)
+                        0  (bf.print-cell\)
+                        0  (bf.print! ";")
+                        0  (bf.zero)
+                        -3 (bf.mov 3 4)
+                        0  (bf.print-cell\)
+                        0  (bf.print! ";")
+                        0  (bf.zero)
+                        -2 (bf.mov 2 3)
+                        0  (bf.print-cell\)
+                        0  (bf.print! "m  ")
+                        0  (bf.zero)])))
 
             (bf.at 15 (bf.zero)) ; ?
 
@@ -275,7 +286,7 @@
             (bf.quadruple "-")))
 
         (bf.commentln "next row")
-        (bf.quadruple "-")        
+        (bf.quadruple "-")
         (bf.at 4
           (bf.print! "\x1b[0m\n")
           (bf.zero)))
