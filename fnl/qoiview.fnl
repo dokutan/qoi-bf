@@ -1,5 +1,12 @@
 (local bf (require :fnl2bf))
 
+(local op_ignore
+  {:rgb   false
+   :rgba  false
+   :index false
+   :diff  false
+   :luma  false})
+
 (fn check-qoif []
   "Read four bytes and check that they are 'qoif'.
    Set the current cell to 1 if the header is valid, else to 0."
@@ -115,17 +122,21 @@
                         254
                         (..
                           (bf.commentln "QOI_OP_RGB")
-                          (bf.at [23 ","
-                                  24 ","
-                                  25 ","]))
+                          (if op_ignore.rgb
+                            ",,,[-]"
+                            (bf.at [23 ","
+                                    24 ","
+                                    25 ","])))
 
                         255
                         (..
                           (bf.commentln "QOI_OP_RGBA")
-                          (bf.at [23 ","
-                                  24 ","
-                                  25 ","
-                                  26 ","]))
+                          (if op_ignore.rgba
+                            ",,,,[-]"
+                            (bf.at [23 ","
+                                    24 ","
+                                    25 ","
+                                    26 ","])))
 
                         ; else
                         (..
@@ -169,7 +180,9 @@
                                   (bf.commentln "add dr to R")
                                   (bf.at 4
                                     (bf.inc -2)
-                                    (bf.add! 18))
+                                    (if op_ignore.diff
+                                      "[-]"
+                                      (bf.add! 18)))
 
                                   (bf.commentln "multiply with carry by 4 to get dg")
                                   (bf.at [1 (bf.zero) 4 (bf.zero)])
@@ -179,7 +192,9 @@
                                   (bf.commentln "add dg to G")
                                   (bf.at 4
                                     (bf.inc -2)
-                                    (bf.add! 19))
+                                    (if op_ignore.diff
+                                      "[-]"
+                                      (bf.add! 19)))
 
                                   (bf.commentln "get db")
                                   (bf.at 1 (bf.zero))
@@ -190,7 +205,9 @@
                                   (bf.commentln "add db to B")
                                   (bf.at 1
                                     (bf.inc -2)
-                                    (bf.add! 23))))
+                                    (if op_ignore.diff
+                                      "[-]"
+                                      (bf.add! 23)))))
                               2
                               (..
                                 (bf.commentln "QOI_OP_LUMA")
@@ -198,7 +215,9 @@
                                   (bf.commentln "subtract dg bias")
                                   (bf.inc -32)
                                   (bf.commentln "add dg to G")
-                                  (bf.add 23 1))
+                                  (if op_ignore.luma
+                                    ""
+                                    (bf.add 23 1)))
 
                                 (bf.commentln "read second byte of QOI_OP_LUMA")
                                 ","
@@ -215,7 +234,9 @@
                                   (bf.commentln "subtract dr bias")
                                   (bf.inc -8)
                                   (bf.commentln "add dr to R")
-                                  (bf.add! 4))
+                                  (if op_ignore.luma
+                                    "[-]"
+                                    (bf.add! 4)))
 
                                 (bf.commentln "get the lower 4 bits")
                                 (bf.zero)
@@ -231,7 +252,9 @@
                                 (bf.commentln "subtract db bias")
                                 (bf.inc -8)
                                 (bf.commentln "add db to B")
-                                (bf.add! 10))
+                                (if op_ignore.luma
+                                  "[-]"
+                                  (bf.add! 10)))
                               3
                               (..
                                 (bf.commentln "QOI_OP_RUN")
@@ -246,9 +269,7 @@
                           :+ (bf.mov! -7)
 
                           (bf.at [1 (bf.zero)
-                                  4 (bf.zero)])))))
-
-                  )))
+                                  4 (bf.zero)]))))))))
 
             (bf.commentln "print current pixel")
             (bf.at 44
