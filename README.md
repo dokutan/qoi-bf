@@ -18,6 +18,8 @@ These steps are only necessary if you modified the source files in `fnl` or want
 - [bfc](https://bfc.wilfred.me.uk/)
 - ImageMagick
 ```sh
+git clone --recursive https://github.com/dokutan/qoi-bf
+cd qoi-bf
 make # build bf/* from fnl/*
 make build # compile bf/* with bfc
 make debug # compile bf/* to lua for debugging
