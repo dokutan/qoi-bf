@@ -50,11 +50,17 @@
       "00: w w w w 0, h h h h 0, channels has_alpha 0 colorspace 0 (decoded header)"
       "20: h h h h 0, 0 0 0 0 0, w w w w 0, 0 0 0 0 0 (loop variables)"
       "40: decoded_pixels 0 0 0 0, decoder temp … (decoder state)"
-      "70: R G B A")
+      "70: R G B A (previous/current pixel)"
+      "90: 1 R G B A 1 R G B A … (array of previous pixels)")
 
     (bf.commentln "set initial value of the previous pixel (0,0,0,255)")
     (bf.at 73
       "-")
+
+    (bf.commentln "initialize array of the previous pixels")
+    (bf.at 90
+      (string.rep "+>>>>>" 64)
+      "<<<<<[<<<<<]>>>>>")
 
     (bf.commentln "check qoif header")
     (check-qoif)
@@ -296,6 +302,45 @@
                         0  (bf.zero)])))
 
             (bf.at 15 (bf.zero)) ; ?
+
+            (bf.at 40
+              (bf.commentln
+                "hash current pixel: (r*3+g*5+b*7+a*11)%64"
+                "r g b a temp hash")
+              (bf.at 4 "[-]")
+              (bf.commentln "R:")
+              (bf.loop
+                (bf.at [0 "-"
+                        4 "+"
+                        5 "+++"]))
+              (bf.at 4 (bf.mov! -4))
+              (bf.commentln "G:")
+              ">"
+              (bf.loop
+                (bf.at [0 "-"
+                        3 "+"
+                        4 "+++++"]))
+              (bf.at 3 (bf.mov! -3))
+              (bf.commentln "B:")
+              ">"
+              (bf.loop
+                (bf.at [0 "-"
+                        2 "+"
+                        3 "+++++++"]))
+              (bf.at 2 (bf.mov! -2))
+              (bf.commentln "A:")
+              ">"
+              (bf.loop
+                (bf.at [0 "-"
+                        1 "+"
+                        2 "+++++++++++"]))
+              (bf.at 1 (bf.mov! -1))
+              (bf.commentln "hash = hash % 64")
+              ">>>" (bf.inc2 64 1) "<"
+              (bf.mod\!)
+              (bf.at [1 "[-]" 2 (bf.mov! -2)])
+              "[-]" ; hash
+              "<<<<<")
 
             (bf.at 10
               (bf.commentln "decrement decoded_pixels")
