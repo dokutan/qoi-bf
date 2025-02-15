@@ -7,6 +7,7 @@ This repo contains brainfuck programs that implement the [Quite OK Image Format]
 
 ## programs
 
+- **qoiview:** display a QOI image in a terminal using ANSI escape sequences
 - **colors-qoi:** generate a test image containing all possible combinations of two color channels
 - **ppm-to-qoi:** convert a ppm image to QOI using only `QOI_OP_RGB` chunks
 - **ppm-to-qoi2:** convert a ppm image to QOI using `QOI_OP_RGB` and `QOI_OP_DIFF` chunks

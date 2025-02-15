@@ -51,7 +51,7 @@
       "20: h h h h 0, 0 0 0 0 0, w w w w 0, 0 0 0 0 0 (loop variables)"
       "40: decoded_pixels 0 0 0 0, decoder temp … (decoder state)"
       "70: R G B A (previous/current pixel)"
-      "90: 1 R G B A 1 R G B A … (array of previous pixels)")
+      "90: R G B A 1 R G B A 1 … (array of previous pixels)")
 
     (bf.commentln "set initial value of the previous pixel (0,0,0,255)")
     (bf.at 73
@@ -59,8 +59,8 @@
 
     (bf.commentln "initialize array of the previous pixels")
     (bf.at 90
-      (string.rep "+>>>>>" 64)
-      "<<<<<[<<<<<]>>>>>")
+      (string.rep ">>>>+>" 64)
+      "<[<<<<<]>")
 
     (bf.commentln "check qoif header")
     (check-qoif)
@@ -170,9 +170,20 @@
                               0
                               (..
                                 (bf.commentln "QOI_OP_INDEX")
-                                ;; (bf.at -14 (bf.print-cell\))
-                                ;; (bf.print! "\n")
-                                )
+                                (if op_ignore.index
+                                  ""
+                                  (..
+                                    (bf.at -14
+                                      (bf.commentln "move index")
+                                      (bf.mov! (- 89 49)))
+                                    (bf.at (- 90 63)
+                                      (bf.commentln "get color from array")
+                                      (bf.mirror (bf.arrayN.get 4))
+                                      (bf.commentln "move color")
+                                      (bf.at [-7 (bf.mov! -12)
+                                              -6 (bf.mov! -12)
+                                              -5 (bf.mov! -12)
+                                              -4 (bf.mov! -12)])))))
                               1
                               (..
                                 (bf.commentln "QOI_OP_DIFF")
@@ -339,7 +350,13 @@
               ">>>" (bf.inc2 64 1) "<"
               (bf.mod\!)
               (bf.at [1 "[-]" 2 (bf.mov! -2)])
-              "[-]" ; hash
+              (bf.commentln "store current pixel in array")
+              (bf.at [-5 (bf.mov 14 4 true)
+                      -4 (bf.mov 14 3 true)
+                      -3 (bf.mov 14 2 true)
+                      -2 (bf.mov 14 1 true)
+                      0  (bf.mov! 13)])
+              (bf.at 14 (bf.mirror (bf.arrayN.set 4)))
               "<<<<<")
 
             (bf.at 10
