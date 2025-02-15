@@ -8,6 +8,7 @@ This repo contains brainfuck programs that implement the [Quite OK Image Format]
 ## programs
 
 - **qoiview:** display a QOI image in a terminal using ANSI escape sequences
+- **qoiview-kitty:** display a QOI image in a terminal using the [kitty graphics protocol](https://sw.kovidgoyal.net/kitty/graphics-protocol/)
 - **colors-qoi:** generate a test image containing all possible combinations of two color channels
 - **ppm-to-qoi:** convert a ppm image to QOI using only `QOI_OP_RGB` chunks
 - **ppm-to-qoi2:** convert a ppm image to QOI using `QOI_OP_RGB` and `QOI_OP_DIFF` chunks
@@ -25,4 +26,7 @@ make # build bf/* from fnl/*
 make build # compile bf/* with bfc
 make debug # compile bf/* to lua for debugging
 make test # run tests
+
+# using the programs
+./build/qoiview < example.qoi
 ```
